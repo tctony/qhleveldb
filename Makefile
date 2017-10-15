@@ -2,10 +2,12 @@ SOURCES = \
   util/status.cc \
   util/env.cc \
 	util/env_posix.cc \
+  util/arena.cc \
 	table/table.cc
 
 TESTS = \
   util/env_test \
+  util/arena_test \
 	db/skiplist_test
 
 PROGRNAMES := $(notdir $(TESTS))
@@ -13,7 +15,7 @@ PROGRNAMES := $(notdir $(TESTS))
 CC = cc
 CXX = c++
 CFLAGS += -I. -I./include
-CXXFLAGS += -I. -I./include
+CXXFLAGS += -I. -I./include -std=c++0x
 LDFLAGS +=
 LIBS +=
 
@@ -34,7 +36,7 @@ STATIC_ALLOBJS := $(STATIC_LIBOBJECTS) $(STATIC_TESTOBJS) $(TESTHARNESS)
 
 default: all
 
-all:
+all: $(STATIC_OUTDIR)/libqhleveldb.a $(STATIC_PROGRAMS)
 
 clean:
 	-rm -rf $(OUT_DIR)
@@ -65,8 +67,15 @@ STATIC_OBJDIRS: \
 
 $(STATIC_ALLOBJS): | STATIC_OBJDIRS
 
+$(STATIC_OUTDIR)/libqhleveldb.a: $(STATIC_LIBOBJECTS)
+	rm -rf $@
+	$(AR) -rs $@ $(STATIC_LIBOBJECTS)
+
 $(STATIC_OUTDIR)/env_test: util/env_test.cc $(STATIC_LIBOBJECTS) $(TESTHARNESS)
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) util/env_test.cc $(STATIC_LIBOBJECTS) $(TESTHARNESS) -o $@ $(LIBS)
+
+$(STATIC_OUTDIR)/arena_test: util/arena_test.cc $(STATIC_LIBOBJECTS) $(TESTHARNESS)
+	$(CXX) $(LDFLAGS) $(CXXFLAGS) util/arena_test.cc $(STATIC_LIBOBJECTS) $(TESTHARNESS) -o $@ $(LIBS)
 
 $(STATIC_OUTDIR)/skiplist_test: db/skiplist_test.cc $(STATIC_LIBOBJECTS) $(TESTHARNESS)
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) db/skiplist_test.cc $(STATIC_LIBOBJECTS) $(TESTHARNESS) -o $@ $(LIBS)

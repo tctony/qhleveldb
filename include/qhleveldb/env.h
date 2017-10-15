@@ -6,6 +6,8 @@
 
 namespace qhleveldb {
 
+class AtomicPointer;
+
 class QHLEVELDB_EXPORT Env {
  public:
   Env() { };
