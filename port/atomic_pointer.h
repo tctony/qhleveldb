@@ -23,7 +23,7 @@ class AtomicPointer {
     MemoryBarrier();
     return result;
   }
-  inline void Acquire_Store(void* v) {
+  inline void Release_Store(void* v) {
     MemoryBarrier();
     rep_ = v;
   }
